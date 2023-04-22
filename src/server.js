@@ -1,3 +1,4 @@
+require("dotenv").config();
 require("./crons/cron");
 
 const express = require("express");

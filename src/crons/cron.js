@@ -9,7 +9,7 @@ cron.schedule("*/30 * * * * *", async() => {
 
     notifications.forEach(notification => {
         const mailData = {
-            from: "crm-notification-service@gmail.com",
+            from: process.env.CRM_EMAIL,
             to: notification.recipientEmails,
             subject: notification.subject,
             text: notification.content,
