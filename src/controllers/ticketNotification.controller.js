@@ -9,43 +9,50 @@ exports.acceptNotificationRequest = async (req, res) => {
         ticketId: req.body.ticketId,
     };
     
+    let notification;
+    
     try {
-        const notification = await ticketNotificationModel.create(notificationObject);
+        notification = await ticketNotificationModel.create(notificationObject);
         
         res.status(200).send({
-            requestId: notification.requestId,
+            ticketId: notification.ticketId,
             status: "Accepted Request"
         });
     } catch (e) {
         console.log("Error while accepting notification request", e.message);
         res.status(500).send({
-            requestId: notification.requestId,
+            ticketId: notification.ticketId,
             status: "Internal server error seen while accepting notification request: " + e.message
         });
     }
 };
 
 exports.getNotificationStatus = async (req, res) => {
-    const reqId = req.params.requestId;
+    const reqId = req.params.ticketId;
     
+    let notification;
+
     try {
-        const notification = await ticketNotificationModel.findOne({
+        notification = await ticketNotificationModel.findOne({
             ticketId: reqId
         });
         
-        res.status(200).send({
-            requestId: notification.requestId,
-            subject: notification.subject,
-            content: notification.content,
-            recipientEmails: notification.recipientEmails,
-            sentStatus: notification.sentStatus,
-        });
+        if (notification) {
+            res.status(200).send({
+                ticketId: notification.ticketId,
+                subject: notification.subject,
+                content: notification.content,
+                recipientEmails: notification.recipientEmails,
+                sentStatus: notification.sentStatus,
+            });
+        } else {
+            throw new Error("No such ticket Id found");
+        }
     } catch (e) {
-        console.log("Error while getting a notification request", e.message);
+        console.log("Error while getting a notification request:", e.message);
         res.status(500).send({
-            requestId: notification.requestId,
+            ticketId: req.params.ticketId,
             status: "Internal server error seen while getting a notification request: " + e.message
         });
-        
     }
 };
